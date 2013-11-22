@@ -1,0 +1,26 @@
+{
+    "name": "fbf/laravel-solarium",
+    "description": "Laravel Framework package for using Solarium",
+    "license" : "MIT",
+    "authors": [
+        {
+            "name": "Zenek Palmer",
+            "email": "zen.palmer@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.*",
+        "solarium/solarium": "dev-develop"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+            "src/controllers"
+        ],
+        "psr-0": {
+            "Fbf\\LaravelSolarium\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
