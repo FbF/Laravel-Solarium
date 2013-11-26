@@ -14,11 +14,6 @@ abstract class LaravelSolariumModelObserver {
         return array();
     }
 
-    public function ignoredFields()
-    {
-        return array();
-    }
-
     public function getIndexUrl($model, $core)
     {
         return FALSE;
@@ -41,9 +36,11 @@ abstract class LaravelSolariumModelObserver {
 
     public function getIndexData($model, $core)
     {
-        $index_data = FALSE;
-
-        return $index_data;
+        return array_merge($model->toArray(), array(
+          'id' => $model->id.'-'.strtolower(get_class($model)),
+          'model_name' => get_class($model),
+          'model_id' => $model->id,
+        ));
     }
 
     public function mapIndexData($index_data, $core)
@@ -91,24 +88,6 @@ abstract class LaravelSolariumModelObserver {
         return $mapped_data;
     }
 
-    public function tidyIndexData($index_data, $core)
-    {
-        $ignored_fields = $this->ignoredFields();
-
-        if ( is_array($index_data) && isset($ignored_fields[$core]) && is_array($ignored_fields[$core]) )
-        {
-            foreach ( $index_data as $field => $value )
-            {
-                if ( in_array($field, $ignored_fields[$core]) )
-                {
-                    unset($index_data[$field]);
-                }
-            }
-        }
-
-        return $index_data;
-    }
-
     public function saved($model)
     {
         $cores = $this->activeCores();
@@ -124,8 +103,6 @@ abstract class LaravelSolariumModelObserver {
         {
             // Find the data to index from the model
             $index_data = $this->getIndexData($model, $core);
-
-            $index_data = $this->tidyIndexData($index_data, $core);
 
             $index_data = $this->mapIndexData($index_data, $core);
 

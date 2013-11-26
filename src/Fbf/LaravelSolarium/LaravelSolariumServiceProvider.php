@@ -28,13 +28,13 @@ class LaravelSolariumServiceProvider extends ServiceProvider {
             $models = array();
         }
 
-        foreach ( $models as $model )
+        foreach ( $models as $observer_model => $namespace_model )
         {
-            $class = 'Fbf\LaravelSolarium\LaravelSolarium' . $model . 'Observer';
+            $class = 'Fbf\LaravelSolarium\LaravelSolarium' . $observer_model . 'Observer';
 
-            if ( class_exists($class) )
+            if ( class_exists($class) && class_exists($namespace_model) )
             {
-                $model::observe(new $class);
+                $namespace_model::observe(new $class);
             }
         }
 	}
