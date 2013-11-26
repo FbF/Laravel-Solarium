@@ -129,7 +129,9 @@ abstract class LaravelSolariumModelObserver {
 
         foreach ( $cores as $core )
         {
-            $this->_indexer->delete($model->id, $core);
+            $id = strtolower($model->id.'-'.get_class($model));
+
+            $this->_indexer->delete($id, $core);
         }
     }
 }

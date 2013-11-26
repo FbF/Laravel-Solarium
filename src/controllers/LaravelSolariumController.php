@@ -37,7 +37,7 @@ class LaravelSolariumController extends Controller {
 
             $search_string = rtrim($search_string, ' OR ');
 
-            $result = $solr->search('title:'.$search_string.'')
+            $result = $solr->search('search_content:'.$search_string.'')
                 ->fields(array('id', 'title', 'content', 'url'))
                 ->page($page, $this->_items_per_page)
                 // ->order_by('title', 'desc')
