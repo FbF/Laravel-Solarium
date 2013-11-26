@@ -22,7 +22,7 @@ class LaravelSolariumController extends Controller {
 
 	    if ( Input::has('search') )
         {
-            $solr = new LaravelSolariumQuery('books');
+            $solr = new LaravelSolariumQuery('search');
 
             $search = Input::get('search');
 
@@ -38,7 +38,7 @@ class LaravelSolariumController extends Controller {
             $search_string = rtrim($search_string, ' OR ');
 
             $result = $solr->search('title:'.$search_string.'')
-                ->fields(array('id', 'title', 'Author.name', 'author_id', 'url'))
+                ->fields(array('id', 'title', 'content', 'url'))
                 ->page($page, $this->_items_per_page)
                 // ->order_by('title', 'desc')
                 // ->filter('author_id_filter', 'author_id:3')
