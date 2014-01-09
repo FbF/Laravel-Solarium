@@ -1,17 +1,25 @@
 Laravel-Solarium
 ================
-
 Laravel Framework package for using Solarium
 
+## Features
 
+* Observes your app's models for inserts, updates and deletes and stores data in a Solr index
+* Supports multiple Solr cores, so you can have different models saving to different cores, or the same model to multiple cores. Useful if you have multiple search facilities in your app, e.g. product search function and general site search.
+* Includes route (configurable URI) and controller for querying a site search core.
+* Includes sample site search results view, which you can use, if you want, but you'll most likely want to just use the partial views...
+* Partial view for site search form that you could include in your layout header
+* Partial view for the site search results that you can include from your custom search results view
 
-<h1>Setting up Solr</h1>
+## Installation
+
+### Setting up Solr
 
 Download the latest version of solr : http://lucene.apache.org/solr/
 
-Unpackage :  tar xvzf solr-4.*.*.tgz
+Unpackage : `tar xvzf solr-4.*.*.tgz`
 
-Rename the example directory in this case : site-search
+Copy the example directory and rename it in this case : site-search
 
 Then rename the collection1 directory to what you would like to call your index.
 
@@ -23,6 +31,7 @@ Then update the solr.xml file to tell the solr server how many indexes you have 
 
 for example :
 
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <solr persistent="false">
@@ -40,12 +49,13 @@ for example :
   </shardHandlerFactory>
 
 </solr>
-
+```
 
 Now for each created index folder you need to update the schema.xml and solrconfig.xml files in the index config folder.
 
 example schema.xml file :
 
+```xml
 <?xml version="1.0" ?>
 <schema name="search" version="1.1">
   <types>
@@ -76,12 +86,13 @@ example schema.xml file :
   <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
   <solrQueryParser defaultOperator="OR"/>
 </schema>
-
+```
 
 example solrconfig.xml :
 
 This is best created by copying the matching folder in the provided example directory.
 
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -176,119 +187,36 @@ This is best created by copying the matching folder in the provided example dire
   </admin>
 
 </config>
-
+```
 
 You will also need to update the core.properties file in the index folder :
 
 The contents are very simple e.g. :
 
-name=search
+`name=search`
 
-
-Then run sudo java -jar start.jar in the index directory.
+Then run `sudo java -jar start.jar` in the index directory.
 
 This will start the solr server, which if configured correctly should be viewable at :
 
 http://localhost:8983/solr/#/search
 
+### Getting the laravel-solarium package
 
+Add the following to your composer.json file if using composer :
 
-<h1>Getting the laravel-solarium package</h1>
-
-add the following to your composer.json file if using composer :
-
+```json
 "require": {
   "fbf/laravel-solarium": "dev-master"
 },
+```
 
-and then do a composer update
+and then do a `composer update`
 
-or
+Add the ServiceProvider in `app/config/app.php`
 
-clone the pakage at : https://github.com/FbF/Laravel-Solarium.git
+Publish the config file:
 
-Usage :
+`php artisan config:publish --package=fbf/laravel-solarium`
 
-foreach of the models that you wish to observe, you will need to create a model observer in the correct folder as follows :
-
-Folder = app/observers/Fbf/LaravelSolarium
-
-example page observer :
-
-Filename = LaravelSolariumPageObserver.php
-
-Contents :
-
-<?php namespace Fbf\LaravelSolarium;
-
-class LaravelSolariumPageObserver extends LaravelSolariumModelObserver
-{
-    public function activeCores()
-    {
-        return array(
-            'search', // The names of the indeces that you want to save the data into.
-        );
-    }
-
-    public function getIndexUrl($model, $core)
-    {
-        return \URL::action('Fbf\LaravelPages\PagesController@view', array('slug' => $model->slug));
-    }
-    // returns the mapping between the solr search schema (array keys) and any model values that want to be saved (array values).
-
-    public function schemaMap()
-    {
-        return array(
-            'search' => array(
-                'id' => 'id',
-                'model_id' => 'model_id',
-                'model_name' => 'model_name',
-                'title' => 'heading',
-                'content' => 'content',
-                'search_content' => array(
-                    'heading',
-                    'page_title',
-                    'content',
-                    'meta_description',
-                    'meta_keywords',
-                ),
-                'status' => 'status',
-                'published_date' => 'published_date',
-                'url' => 'url',
-            ),
-        );
-    }
-}
-
-?>
-
-Configuring :
-
-create app/config/packages/fbf/laravel-solarium/config.php
-
-contents :
-
-<?php
-
-return array(
-    'models' => array(
-        'Job' => 'Fbf\LaravelJobs\Job',
-        'Page' => 'Fbf\LaravelPages\Page',
-        'Post' => 'Fbf\LaravelBlog\Post',
-    ),
-);
-
-?>
-
-where the models array keys relate to the observer model name eg.
-
-Job is derived from :
-
-LaravelSolariumJobObserver.php
-
-and the array value relate to the fully namespaced model name that the observer observes.
-
-
-then run :
-
-sudo composer dump-autoload
+Edit the config file.

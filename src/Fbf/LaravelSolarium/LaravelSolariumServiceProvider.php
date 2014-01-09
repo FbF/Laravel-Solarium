@@ -1,6 +1,5 @@
 <?php namespace Fbf\LaravelSolarium;
 
-use Config;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelSolariumServiceProvider extends ServiceProvider {
@@ -20,21 +19,20 @@ class LaravelSolariumServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('fbf/laravel-solarium');
+		include __DIR__.'/../../routes.php';
 
-		$models = Config::get('laravel-solarium::models');
+		$models = \Config::get('laravel-solarium::models');
 
         if ( empty($models) || ! is_array($models) )
         {
             $models = array();
         }
 
-        foreach ( $models as $observer_model => $namespace_model )
+        foreach ( $models as $namespace_model => $config)
         {
-            $class = 'Fbf\LaravelSolarium\LaravelSolarium' . $observer_model . 'Observer';
-
-            if ( class_exists($class) && class_exists($namespace_model) )
+            if ( class_exists($namespace_model) )
             {
-                $namespace_model::observe(new $class);
+                $namespace_model::observe(new LaravelSolariumModelObserver());
             }
         }
 	}

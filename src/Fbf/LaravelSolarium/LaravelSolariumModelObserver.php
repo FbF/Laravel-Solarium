@@ -1,6 +1,6 @@
 <?php namespace Fbf\LaravelSolarium;
 
-abstract class LaravelSolariumModelObserver {
+class LaravelSolariumModelObserver {
 
     protected $_indexer;
 
@@ -9,19 +9,29 @@ abstract class LaravelSolariumModelObserver {
         $this->_indexer = new LaravelSolariumIndexer;
     }
 
-    public function activeCores()
+	protected function getModelConfig($model)
+	{
+		$nameSpacedClass = get_class($model);
+		return \Config::get('laravel-solarium::models.'.$nameSpacedClass);
+	}
+
+    public function activeCores($model)
     {
-        return array();
+	    $config = $this->getModelConfig($model);
+        return array_keys($config['active_cores']);
     }
 
     public function getIndexUrl($model, $core)
     {
-        return FALSE;
+	    $config = $this->getModelConfig($model);
+	    $url = $config['url'];
+	    return $url($model, $core);
     }
 
-    public function schemaMap()
+    public function schemaMap($model, $core)
     {
-        return array();
+	    $config = $this->getModelConfig($model);
+	    return $config['active_cores'][$core];
     }
 
     public function addUrlToIndexData($index_data, $model, $core)
@@ -43,16 +53,11 @@ abstract class LaravelSolariumModelObserver {
         ));
     }
 
-    public function mapIndexData($index_data, $core)
+    public function mapIndexData($index_data, $model, $core)
     {
-        $schema_map = $this->schemaMap();
+        $schema_map = $this->schemaMap($model, $core);
 
         if ( empty($schema_map) || ! is_array($schema_map) )
-        {
-            return $index_data;
-        }
-
-        if ( ! isset($schema_map[$core]) || empty($schema_map[$core]) || ! is_array($schema_map[$core]) )
         {
             return $index_data;
         }
@@ -61,7 +66,7 @@ abstract class LaravelSolariumModelObserver {
 
         if ( is_array($index_data) )
         {
-            foreach( $schema_map[$core] as $solr_key => $model_keys )
+            foreach( $schema_map as $solr_key => $model_keys )
             {
                 if ( is_array($model_keys) )
                 {
@@ -90,7 +95,7 @@ abstract class LaravelSolariumModelObserver {
 
     public function saved($model)
     {
-        $cores = $this->activeCores();
+        $cores = $this->activeCores($model);
 
         if ( empty($cores) || ! is_array($cores) )
         {
@@ -104,7 +109,7 @@ abstract class LaravelSolariumModelObserver {
             // Find the data to index from the model
             $index_data = $this->getIndexData($model, $core);
 
-            $index_data = $this->mapIndexData($index_data, $core);
+            $index_data = $this->mapIndexData($index_data, $model, $core);
 
             $index_data = $this->addUrlToIndexData($index_data, $model, $core);
 
@@ -118,7 +123,7 @@ abstract class LaravelSolariumModelObserver {
 
     public function deleted($model)
     {
-        $cores = $this->activeCores();
+        $cores = $this->activeCores($model);
 
         if ( empty($cores) || ! is_array($cores) )
         {
