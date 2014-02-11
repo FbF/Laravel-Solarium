@@ -3,7 +3,8 @@
 {{-- Assumes you've done @include ('laravel-solarium::partials.form') in the layout --}}
 
 @section('title')
-	@if (!empty(Input::get('term')))
+    <?php $input = Input::get('term'); ?>
+	@if (!empty($input))
 		Search Results for {{ Input::get('term') }}
 	@else
 		Please enter a search term

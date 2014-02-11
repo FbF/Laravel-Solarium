@@ -4,13 +4,21 @@
 		@foreach ($results as $document)
 			<div class="search-result">
 				<a href="{{$document['url']}}" class="search-result-title">{{ $document['title'] }}</a>
-				<p class="search-result-content">{{ $document['content'] }}</p>
+				<p class="search-result-content">
+				     <?php $highlighted = $highlighting->getResult($document->id) ?>
+                     @if ($highlighted)
+                         @foreach ($highlighted as $field => $highlight)
+                             {{ implode(' (...) ', $highlight); }}
+                         @endforeach
+                     @endif
+				</p>
 			</div>
 		@endforeach
 		{{ $paginator->appends(array('search' => Input::get('term')))->links() }}
 	</div>
 @else
-	@if (!empty(Input::get('term')))
+    <?php $input = Input::get('term'); ?>
+	@if (!empty($input))
 		<p>No Search Results found for {{ Input::get('term') }}</p>
 	@else
 		<p>Please enter a search term</p>

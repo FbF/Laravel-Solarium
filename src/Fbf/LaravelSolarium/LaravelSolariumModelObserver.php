@@ -28,6 +28,12 @@ class LaravelSolariumModelObserver {
 	    return $url($model, $core);
     }
 
+    public function getStripTagsFields($model, $core)
+    {
+        $config = $this->getModelConfig($model);
+	    return ( isset($config['strip_tags']) && is_array($config['strip_tags']) ) ? $config['strip_tags'] : array();
+    }
+
     public function schemaMap($model, $core)
     {
 	    $config = $this->getModelConfig($model);
@@ -62,6 +68,8 @@ class LaravelSolariumModelObserver {
             return $index_data;
         }
 
+        $strip_tag_fields = $this->getStripTagsFields($model, $core);
+
         $mapped_data = array();
 
         if ( is_array($index_data) )
@@ -76,7 +84,14 @@ class LaravelSolariumModelObserver {
                     {
                         if ( isset($index_data[$model_key]) )
                         {
-                            $mapped_data[$solr_key] .= $index_data[$model_key].' ';
+                            if ( in_array($model_keys, $strip_tag_fields) )
+                            {
+                                $mapped_data[$solr_key] .= strip_tags($index_data[$model_key]).' ';
+                            }
+                            else
+                            {
+                                $mapped_data[$solr_key] .= $index_data[$model_key].' ';
+                            }
                         }
                     }
                 }
@@ -84,7 +99,14 @@ class LaravelSolariumModelObserver {
                 {
                     if ( isset($index_data[$model_keys]) )
                     {
-                        $mapped_data[$solr_key] = $index_data[$model_keys];
+                        if ( in_array($model_keys, $strip_tag_fields) )
+                        {
+                            $mapped_data[$solr_key] = strip_tags($index_data[$model_keys]);
+                        }
+                        else
+                        {
+                            $mapped_data[$solr_key] = $index_data[$model_keys];
+                        }
                     }
                 }
             }

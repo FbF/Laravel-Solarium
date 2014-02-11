@@ -24,6 +24,10 @@ class LaravelSolariumQuery {
 
     protected $_filters;
 
+    protected $_highlight_fields = array();
+
+    protected $_highlight_tag = FALSE;
+
     public function __construct($core=FALSE)
     {
         $this->_core = $core;
@@ -48,6 +52,15 @@ class LaravelSolariumQuery {
         $this->_count_index = 10;
 
         $this->_filters = array();
+    }
+
+    public function highlight( array $fields = array(), $tag = 'b' )
+    {
+      $this->_highlight_fields = $fields;
+
+      $this->_highlight_tag = $tag;
+
+      return $this;
     }
 
     public function search($search_term, $core=FALSE)
@@ -161,6 +174,15 @@ class LaravelSolariumQuery {
             {
                 $query->createFilterQuery($filter_name)->setQuery($filter);
             }
+        }
+
+        if ( is_array($this->_highlight_fields) && ! empty($this->_highlight_fields) )
+        {
+            $hl = $query->getHighlighting();
+            $hl->setSnippets(5);
+            $hl->setFields(trim(implode(',', $this->_highlight_fields), ','));
+            $hl->setSimplePrefix('<'.$this->_highlight_tag.'>');
+            $hl->setSimplePostfix('</'.$this->_highlight_tag.'>');
         }
 
         $result = $client->select($query);
