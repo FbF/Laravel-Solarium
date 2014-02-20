@@ -4,9 +4,9 @@ class LaravelSolariumModelObserver {
 
     protected $_indexer;
 
-    public function __construct()
+    public function __construct( LaravelSolariumIndexer $indexer )
     {
-        $this->_indexer = new LaravelSolariumIndexer;
+        $this->_indexer = $indexer;
     }
 
 	protected function getModelConfig($model)
