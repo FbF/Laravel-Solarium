@@ -6,10 +6,13 @@
 				<a href="{{$document['url']}}" class="search-result-title">{{ $document['title'] }}</a>
 				<p class="search-result-content">
 				     <?php $highlighted = $highlighting->getResult($document->id) ?>
-                     @if ($highlighted)
+                     <?php $highlightedFields = ( ! $highlighted ) ? FALSE : $highlighted->getFields() ?>
+                     @if ( ! empty($highlightedFields))
                          @foreach ($highlighted as $field => $highlight)
                              {{ implode(' (...) ', $highlight); }}
                          @endforeach
+                     @else
+                        {{ Str::words($document['content'], 50) }}
                      @endif
 				</p>
 			</div>
