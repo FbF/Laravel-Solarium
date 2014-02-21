@@ -17,7 +17,7 @@
 				</p>
 			</div>
 		@endforeach
-		{{ $paginator->appends(array('search' => Input::get('term')))->links() }}
+		{{ $paginator->appends(array('term' => Input::get('term')))->links() }}
 	</div>
 @else
     <?php $input = Input::get('term'); ?>
