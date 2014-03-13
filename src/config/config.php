@@ -60,6 +60,9 @@ return array(
                 'host' => '127.0.0.1',
                 'port' => 8983,
                 'path' => '/solr/',
+                // only add these if Solr is setup up to use basic auth
+                // 'username' => '',
+                // 'password' => '',
             ),
         ),
     ),
