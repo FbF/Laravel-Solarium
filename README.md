@@ -215,8 +215,10 @@ and then do a `composer update`
 
 Add the ServiceProvider in `app/config/app.php`
 
+`'Fbf\LaravelSolarium\LaravelSolariumServiceProvider'`
+
 Publish the config file:
 
-`php artisan config:publish --package=fbf/laravel-solarium`
+`php artisan config:publish fbf/laravel-solarium`
 
 Edit the config file.
