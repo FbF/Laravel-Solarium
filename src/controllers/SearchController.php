@@ -46,3 +46,4 @@ class SearchController extends \BaseController {
 
         return \View::make($viewFile)->with(compact('results', 'paginator', 'highlighting'));
 	}
+}
