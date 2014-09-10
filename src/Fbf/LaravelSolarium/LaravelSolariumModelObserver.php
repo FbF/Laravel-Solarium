@@ -25,7 +25,7 @@ class LaravelSolariumModelObserver {
     {
 	    $config = $this->getModelConfig($model);
 	    $url = $config['url'];
-	    return $url($model, $core);
+	    return is_callable($url) ? $url($model, $core) : FALSE;
     }
 
     public function getStripTagsFields($model, $core)
@@ -52,11 +52,18 @@ class LaravelSolariumModelObserver {
 
     public function getIndexData($model, $core)
     {
+        $config = $this->getModelConfig($model);
+        $extra_index_data = array();
+        if ( isset($config['extra_index_data']) && is_callable($config['extra_index_data']) )
+        {
+            $extra_index_data = $config['extra_index_data']($model, $core);
+        }
+
         return array_merge($model->toArray(), array(
           'id' => $model->id.'-'.strtolower(get_class($model)),
           'model_name' => get_class($model),
           'model_id' => $model->id,
-        ));
+        ), $extra_index_data);
     }
 
     public function mapIndexData($index_data, $model, $core)
