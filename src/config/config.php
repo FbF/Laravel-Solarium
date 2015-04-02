@@ -4,16 +4,16 @@
 
 return array(
     'default_core' => 'laravel',  // default Solr index core name
-    'models' => array(
+    'models' => array( // Array of models to observe
 	    'Fbf\LaravelPages\Page' => array(
-		    'active_cores' => array(
-			    'laravel' => array(
+            'active_cores' => array( // Models can be saved ot more than one Sols index core
+                'laravel' => array( // Array of mapping of Solr schema fields to Eloquent model fields.
 				    'id' => 'id',
 				    'model_id' => 'model_id',
 				    'model_name' => 'model_name',
 				    'title' => 'heading',
 				    'content' => 'content',
-				    'search_content' => array(
+                    'search_content' => array( // A Solr schema field can be populated by more than one Eloquent field
 					    'heading',
 					    'page_title',
 					    'content',
@@ -25,15 +25,15 @@ return array(
 				    'url' => 'url',
 			    ),
 		    ),
-		    'url' => function($model, $core)
+		    'url' => function($model, $core) // Callback to get the URL for this Solr search index record
 		    {
 			    return $model->getUrl();
 		    },
-	        'conditional_save' => function($model, $core)
+	        'conditional_save' => function($model, $core) // Callback returns boolean to determine if this model should be indexed.
             {
-                return TRUE; // boolean to dewtermine if this model should be indexed.
+                return TRUE;
             },
-            'extra_index_data' => function($model, $core)
+            'extra_index_data' => function($model, $core) // Callback to populate search index fields with additional Eloquent data. i.e. relationships etc.
             {
                 $data = array();
 
