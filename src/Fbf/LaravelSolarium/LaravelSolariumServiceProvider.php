@@ -20,7 +20,10 @@ class LaravelSolariumServiceProvider extends ServiceProvider {
 	{
 		$this->package('fbf/laravel-solarium');
 
-		include __DIR__.'/../../routes.php';
+        if (\Config::get('laravel-solarium::use_package_routes', true))
+		{
+		    include __DIR__.'/../../routes.php';
+        }
 
 		$models = \Config::get('laravel-solarium::models');
 

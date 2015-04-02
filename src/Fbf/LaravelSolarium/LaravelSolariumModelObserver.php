@@ -53,6 +53,18 @@ class LaravelSolariumModelObserver {
     public function getIndexData($model, $core)
     {
         $config = $this->getModelConfig($model);
+
+        $conditional_save = TRUE;
+        if ( isset($config['conditional_save']) && is_callable($config['conditional_save']) )
+        {
+            $conditional_save = $config['conditional_save']($model, $core);
+        }
+
+        if ( $conditional_save == FALSE )
+        {
+            return FALSE;
+        }
+
         $extra_index_data = array();
         if ( isset($config['extra_index_data']) && is_callable($config['extra_index_data']) )
         {
@@ -68,6 +80,11 @@ class LaravelSolariumModelObserver {
 
     public function mapIndexData($index_data, $model, $core)
     {
+        if ( $index_data === FALSE )
+        {
+            return FALSE;
+        }
+
         $schema_map = $this->schemaMap($model, $core);
 
         if ( empty($schema_map) || ! is_array($schema_map) )
